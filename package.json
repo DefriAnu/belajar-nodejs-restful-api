@@ -1,0 +1,38 @@
+{
+  "name": "belajar-nodejs-restful-api",
+  "version": "1.0.0",
+  "description": "Belajar NodeJS RESTful API",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "jest -i"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    }
+  },
+  "author": "Defri Anugrah",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@prisma/client": "^4.16.2",
+    "bcrypt": "^6.0.0",
+    "express": "^5.1.0",
+    "joi": "^17.13.3",
+    "uuid": "^11.1.0",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.27.2",
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^5.0.2",
+    "@types/jest": "^29.5.14",
+    "@types/supertest": "^6.0.3",
+    "@types/uuid": "^10.0.0",
+    "babel-jest": "^29.7.0",
+    "eslint": "^9.28.0",
+    "jest": "^29.7.0",
+    "prisma": "^4.15.0",
+    "supertest": "^7.1.1"
+  }
+}

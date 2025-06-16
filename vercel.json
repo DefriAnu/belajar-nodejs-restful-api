@@ -1,0 +1,14 @@
+{
+    "varsion" : 1,
+    "builds" : [
+        {
+            "src" : "src/main.js"
+        }
+    ],
+    "routes" : [
+        {
+            "src" : "/(.*)",
+            "dest" : "/"
+        }
+    ]
+}
