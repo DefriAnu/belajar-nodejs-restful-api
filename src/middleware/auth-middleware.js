@@ -1,28 +1,41 @@
 import { logger } from "../application/logging.js";
+import jwt from "jsonwebtoken";
 
-import { prismaClient } from "../application/database.js";
+export const authMiddleware =  (req, res, next) => {
+    const auth = req.get("Authorization");
 
-export const authMiddleware = async (req, res, next) => {
-    const token = req.get("Authorization");
+    logger.info("================================");
+    logger.info(auth);
+    logger.info("================================");
 
-    if(!token){
+
+    if(!auth){
         res.status(401).json({
             errors : "Unauthorized"
         }).end();
     }else{
-        const user = await prismaClient.user.findUnique({
-            where: {
-                token : token
-            }
-        });
+        
+        const token = auth.split(" ")[1];
+        const secret = process.env.JWT_SECRET;
 
-        if(!user){
-            res.status(404).json({
-                errors : "Users tidak ditemukan"
-            }).end();
-        }else{
-            req.user = user;
+        logger.info(token);
+        logger.info(secret);
+
+        try {
+            logger.info("wkwkwkkw");
+            const jwtDecode = jwt.verify(token, secret);
+                logger.info("================================");
+                logger.info(jwtDecode);
+                logger.info("================================");
+                req.user = jwtDecode;
+                logger.info(req.user);
             next();
+        }catch(e){
+            logger.info("Error nya adalah ");
+            logger.error(e.message);
+            res.status(404).json({
+                errors : "Unauthorized"
+            }).end();
         }
     }
 };

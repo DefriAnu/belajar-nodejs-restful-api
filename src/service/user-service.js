@@ -4,6 +4,8 @@ import { prismaClient } from "../application/database.js";
 import bcrypt from "bcrypt";
 import { ResponseError } from "../error/response-error.js";
 import { v4 as uuid} from "uuid";
+import jwt from "jsonwebtoken";
+import { logger } from "../application/logging.js";
 
 const register = async (request) =>{
 
@@ -41,7 +43,8 @@ const login = async (request) => {
         },
         select: {
             username : true,
-            password : true
+            password : true,
+            name: true
         }
     });
 
@@ -55,23 +58,33 @@ const login = async (request) => {
         throw new ResponseError(401, "Username or password is wrong");
     }
 
-    const token = uuid().toString();
+    const payload = {
+        username : user.username,
+        name : user.name,
+    };
 
-    return await prismaClient.user.update({
-        where : {
-            username : loginRequest.username
-        },
+    const secret = process.env.JWT_SECRET;
+
+    const expiredIn = 60 * 60 * 1;
+
+    const token = jwt.sign(payload, secret, {expiresIn : expiredIn});
+
+    return {
         data : {
-            token : token
+            username : user.username,
+            name : user.name
         },
-        select : {
-            token : true
-        }
-    });
+        token : token
+    };
 };
 
 const get = async(name) => {
+    logger.info("1111111111111111111");
+
     const username = validate(getUserValidation, name);
+
+    logger.info("1111111111111111111");
+
 
     const user = await prismaClient.user.findFirst({
         where:{
@@ -82,6 +95,9 @@ const get = async(name) => {
             name : true
         }
     });
+
+
+    logger.info(user);
 
     if(!user){
         throw new ResponseError(404, "User is not found");
@@ -126,38 +142,38 @@ const update = async(request) => {
     }
 };
 
-const logout = async (request) =>{
-    const username = validate(getUserValidation, request);
+// const logout = async (request) =>{
+//     const username = validate(getUserValidation, request);
 
-    const count = await prismaClient.user.findUnique({
-        where: {
-            username : username
-        }
-    });
+//     const count = await prismaClient.user.findUnique({
+//         where: {
+//             username : username
+//         }
+//     });
 
-    if(!count){
-        throw new ResponseError(401, "User is not found");
-    }
+//     if(!count){
+//         throw new ResponseError(401, "User is not found");
+//     }
 
-    const update = await prismaClient.user.update({
-        data : {
-            token : null
-        },
-        where :{
-            username : username
-        },
-        select : {
-            username : true
-        }
-    });
+//     const update = await prismaClient.user.update({
+//         data : {
+//             token : null
+//         },
+//         where :{
+//             username : username
+//         },
+//         select : {
+//             username : true
+//         }
+//     });
 
-    return update;
-};
+//     return update;
+// };
 
 export default{
     register,
     login,
     get,
     update,
-    logout
+    // logout
 };
