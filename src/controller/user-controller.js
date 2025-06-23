@@ -1,3 +1,4 @@
+import { logger } from "../application/logging.js";
 import userService from "../service/user-service.js";
 
 const register = async(req, res, next) =>{
