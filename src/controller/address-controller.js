@@ -41,12 +41,6 @@ const update = async (req, res, next) => {
         const request = req.body;
         request.id = req.params.addressId;
 
-        logger.info("==========================");
-        logger.info(user);
-        logger.info(contactId);
-        logger.info(request);
-        logger.info("==========================");
-
         const result = await addressService.update(user, contactId, request);
 
         res.status(200).json({
