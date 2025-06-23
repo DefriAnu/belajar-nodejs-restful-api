@@ -7,6 +7,8 @@ import { v4 as uuid} from "uuid";
 import jwt from "jsonwebtoken";
 import { logger } from "../application/logging.js";
 
+const tokenjwt = new Map();
+
 const register = async (request) =>{
 
     const user = validate(registeredUserValidation, request);
@@ -35,6 +37,7 @@ const register = async (request) =>{
 };
 
 const login = async (request) => {
+
     const loginRequest = validate(loginUserValidation, request);
 
     const user = await prismaClient.user.findUnique({
@@ -69,6 +72,9 @@ const login = async (request) => {
 
     const token = jwt.sign(payload, secret, {expiresIn : expiredIn});
 
+
+    tokenjwt.set(user.username, token);
+
     return {
         data : {
             username : user.username,
@@ -79,12 +85,7 @@ const login = async (request) => {
 };
 
 const get = async(name) => {
-    logger.info("1111111111111111111");
-
     const username = validate(getUserValidation, name);
-
-    logger.info("1111111111111111111");
-
 
     const user = await prismaClient.user.findFirst({
         where:{
@@ -95,9 +96,6 @@ const get = async(name) => {
             name : true
         }
     });
-
-
-    logger.info(user);
 
     if(!user){
         throw new ResponseError(404, "User is not found");
@@ -145,29 +143,7 @@ const update = async(request) => {
 const logout = async (request) =>{
     const username = validate(getUserValidation, request);
 
-    const count = await prismaClient.user.findUnique({
-        where: {
-            username : username
-        }
-    });
-
-    if(!count){
-        throw new ResponseError(401, "User is not found");
-    }
-
-    const update = await prismaClient.user.update({
-        data : {
-            token : null
-        },
-        where :{
-            username : username
-        },
-        select : {
-            username : true
-        }
-    });
-
-    return update;
+    tokenjwt.delete(username);
 };
 
 export default{
@@ -175,5 +151,6 @@ export default{
     login,
     get,
     update,
-    // logout
+    logout,
+    tokenjwt
 };
