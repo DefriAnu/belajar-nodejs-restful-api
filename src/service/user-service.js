@@ -72,7 +72,6 @@ const login = async (request) => {
 
     const token = jwt.sign(payload, secret, {expiresIn : expiredIn});
 
-
     tokenjwt.set(user.username, token);
 
     return {

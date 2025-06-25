@@ -1,6 +1,13 @@
 import { logger } from "./application/logging.js";
 import {web} from "./application/web.js";
+import https from "https";
+import fs from "fs";
 
-web.listen(3000, () => {
+const options = {
+  key: fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem"),
+};
+
+https.createServer(options, web).listen(3000, () => {
     logger.info("App start");
 });

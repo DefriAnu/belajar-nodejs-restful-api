@@ -11,7 +11,6 @@ export const authMiddleware =  (req, res, next) => {
             errors : "Unauthorized"
         }).end();
     }else{
-        
         const token = auth.split(" ")[1];
         const secret = process.env.JWT_SECRET;
 
